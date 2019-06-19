@@ -13,7 +13,7 @@ const r = new Snoowrap({
   password: password
 });
 
-const num = Math.floor(Math.random() * 25);
+const num = Math.floor(Math.random() * 100);
 
 class App extends Component {
   constructor(props) {
