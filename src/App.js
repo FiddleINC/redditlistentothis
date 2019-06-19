@@ -72,12 +72,15 @@ class App extends Component {
       return <h1>{this.state.submission[0].content}</h1>;
     }, 3000);
   }
+
+  refreshPage() {
+    window.location.reload();
+  }
   render() {
     const style = {
       background: "#F5F5F5",
       padding: "20px"
-
-    }
+    };
     return (
       <div className="App">
         <div className="App-header">
@@ -88,9 +91,16 @@ class App extends Component {
               }}
               style={{
                 width: this.state.width[num],
-                height: this.state.height[num]
+                height: this.state.height[num],
+                border: "7.5px solid #292C35"
               }}
             />
+          </div>
+          <div className={this.state.class}>
+            <button type="button" onClick={this.refreshPage} className="button">
+              {" "}
+              <span>Reload</span>{" "}
+            </button>
           </div>
         </div>
       </div>
