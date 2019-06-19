@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import { clientId, clientSecret, username, password } from "./config";
+import { whileStatement } from "@babel/types";
 // import { InboxStream, CommentStream, SubmissionStream } from "snoostorm";
 
 const Snoowrap = require("snoowrap");
@@ -22,7 +23,8 @@ class App extends Component {
     this.state = {
       content: [],
       width: [],
-      height: []
+      height: [],
+      class: "hidden"
     };
 
     this.getSubmission = this.getSubmission.bind(this);
@@ -47,7 +49,8 @@ class App extends Component {
       this.setState({
         content: href,
         width: width,
-        height: height
+        height: height,
+        class: ""
       });
     }, 4000);
   }
@@ -69,20 +72,26 @@ class App extends Component {
       return <h1>{this.state.submission[0].content}</h1>;
     }, 3000);
   }
-
   render() {
+    const style = {
+      background: "#F5F5F5",
+      padding: "20px"
+
+    }
     return (
       <div className="App">
         <div className="App-header">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: this.state.content[num]
-            }}
-            style={{
-              width: this.state.width[num],
-              height: this.state.height[num]
-            }}
-          />
+          <div className={this.state.class} style={style}>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: this.state.content[num]
+              }}
+              style={{
+                width: this.state.width[num],
+                height: this.state.height[num]
+              }}
+            />
+          </div>
         </div>
       </div>
     );
