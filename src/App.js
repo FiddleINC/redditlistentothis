@@ -33,7 +33,7 @@ class App extends Component {
     let width = [];
     let height = [];
     r.getSubreddit("listentothis")
-      .getTop({ time: "month" })
+      .getTop({ time: "month", limit: 100 })
       .then(response => {
         response.map(sub => {
           // console.log(sub.media_embed.content);
