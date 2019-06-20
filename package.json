@@ -15,6 +15,7 @@
     "react-scripts": "3.0.1",
     "snoostorm": "^1.0.2",
     "snoowrap": "^1.17.0",
+    "yarn": "^1.16.0",
     "youtube-api": "^2.0.10"
   },
   "scripts": {
