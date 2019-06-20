@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 import { clientId, clientSecret, username, password } from "./config";
-import { whileStatement } from "@babel/types";
 // import { InboxStream, CommentStream, SubmissionStream } from "snoostorm";
 
 const Snoowrap = require("snoowrap");
@@ -21,7 +20,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      content: [],
+      author_name: [],
+      html: [],
       width: [],
       height: [],
       class: "hidden"
@@ -37,9 +37,10 @@ class App extends Component {
     r.getSubreddit("listentothis")
       .getTop({ time: "month", limit: 100 })
       .then(response => {
+        console.log(response);
         response.map(sub => {
           // console.log(sub.media_embed.content);
-          console.log(sub.media_embed);
+          console.log(sub.media);
           href.push(sub.media_embed.content);
           width.push(sub.media_embed.width);
           height.push(sub.media_embed.height);
@@ -47,7 +48,7 @@ class App extends Component {
       });
     setTimeout(() => {
       this.setState({
-        content: href,
+        html: href,
         width: width,
         height: height,
         class: ""
@@ -64,15 +65,6 @@ class App extends Component {
 
   componentWillMount() {}
 
-  renderPlayer() {
-    setTimeout(() => {
-      console.log(
-        "This is on Render Player" + this.state.submission[0].content
-      );
-      return <h1>{this.state.submission[0].content}</h1>;
-    }, 3000);
-  }
-
   refreshPage() {
     window.location.reload();
   }
@@ -87,7 +79,7 @@ class App extends Component {
           <div className={this.state.class} style={style}>
             <div
               dangerouslySetInnerHTML={{
-                __html: this.state.content[num]
+                __html: this.state.html[num]
               }}
               style={{
                 width: this.state.width[num],
@@ -99,7 +91,7 @@ class App extends Component {
           <div className={this.state.class}>
             <button type="button" onClick={this.refreshPage} className="button">
               {" "}
-              <span>Reload</span>{" "}
+              <span>Refresh</span>
             </button>
           </div>
         </div>
