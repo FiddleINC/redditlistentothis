@@ -51,22 +51,17 @@ class App extends Component {
     this.validateToken = this.validateToken.bind(this);
     this.getYouTubeData = this.getYouTubeData.bind(this);
     this.getYouTubePlaylists = this.getYouTubePlaylists.bind(this);
+    this.addId = this.addId.bind(this);
+    this.getVideoId = this.getVideoId.bind(this);
   }
 
   getCredentials() {
     axios.get("../client_secret.json").then(response => {
-      console.log(response.data.web);
       this.setState({
         YouTubeClientID: response.data.web.client_id,
         YouTubeClientSecret: response.data.web.client_secret,
         YouTubeRedirect: response.data.web.redirect_uris[0]
       });
-
-      console.log(
-        this.state.YouTubeClientID,
-        this.state.YouTubeClientSecret,
-        this.state.YouTubeRedirect
-      );
     });
   }
 
@@ -85,7 +80,6 @@ class App extends Component {
       )
       .then(response => {
         response.data.items.map(item => {
-          console.log(item.id);
           this.setState({
             userId: item.id
           });
@@ -125,18 +119,15 @@ class App extends Component {
     r.getSubreddit("listentothis")
       .getTop({ time: "month", limit: 100 })
       .then(response => {
-        console.log(response);
         response.map(sub => {
           // console.log(sub.media_embed.content);
-          console.log(sub.media);
-
+          console.log(sub);
           href.push(sub.media_embed.content);
           width.push(sub.media_embed.width);
           height.push(sub.media_embed.height);
         });
       });
     setTimeout(() => {
-      console.log(this.state.token);
       this.setState({
         html: href,
         width: width,
@@ -145,6 +136,11 @@ class App extends Component {
       });
     }, 4000);
   }
+
+  getVideoId() {
+    console.log(this);
+  }
+
   componentDidMount() {
     // r.getHot()
     //   .map(post => post.title)
@@ -154,7 +150,6 @@ class App extends Component {
   }
 
   componentWillMount() {
-    console.log(hash);
     let _token = hash.access_token;
 
     if (_token) {
@@ -170,8 +165,12 @@ class App extends Component {
   refreshPage() {
     window.location.reload();
   }
+
+  addId() {
+    document.getElementsByTagName("iframe")[0].setAttribute("id", "yt");
+  }
+
   render() {
-    console.log(this.state);
     const style = {
       background: "#F5F5F5",
       padding: "20px"
@@ -186,6 +185,7 @@ class App extends Component {
                   dangerouslySetInnerHTML={{
                     __html: this.state.html[num]
                   }}
+                  onMouseEnter={this.addId}
                   style={{
                     width: this.state.width[num],
                     height: this.state.height[num],
@@ -209,6 +209,15 @@ class App extends Component {
                 >
                   {" "}
                   <span>Get Playlists</span>
+                </button>
+                <button
+                  type="button"
+                  // eslint-disable-next-line no-restricted-globals
+                  onClick={this.getVideoId}
+                  className="btn btn--loginApp-link"
+                >
+                  {" "}
+                  <span>Get Video Id</span>
                 </button>
               </div>
             </div>
