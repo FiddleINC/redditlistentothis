@@ -13,7 +13,9 @@ import {
 const oauth2Endpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 const scopes = [
   "https://www.googleapis.com/auth/youtube",
-  "https://www.googleapis.com/auth/youtube.readonly"
+  "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/youtubepartner",
+  "https://www.googleapis.com/auth/youtube.force-ssl"
 ];
 
 const Snoowrap = require("snoowrap");
@@ -43,7 +45,9 @@ class App extends Component {
       YouTubeClientID: "",
       YouTubeClientSecret: "",
       YouTubeRedirect: "",
-      userId: null
+      userId: null,
+      videoId: null,
+      playlistsId: []
     };
 
     this.getSubmission = this.getSubmission.bind(this);
@@ -51,8 +55,9 @@ class App extends Component {
     this.validateToken = this.validateToken.bind(this);
     this.getYouTubeData = this.getYouTubeData.bind(this);
     this.getYouTubePlaylists = this.getYouTubePlaylists.bind(this);
-    this.addId = this.addId.bind(this);
+    // this.addId = this.addId.bind(this);
     this.getVideoId = this.getVideoId.bind(this);
+    this.addToPlaylist = this.addToPlaylist.bind(this);
   }
 
   getCredentials() {
@@ -99,7 +104,15 @@ class App extends Component {
       "https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=25&mine=true";
 
     axios.get(url, config).then(response => {
-      console.log(response);
+      let playlistIds = [];
+      console.log(response.data.items);
+      response.data.items.forEach(item => {
+        playlistIds.push(item.id);
+      });
+      console.log(playlistIds);
+      this.setState({
+        playlistsId: playlistIds
+      });
     });
   }
 
@@ -139,6 +152,45 @@ class App extends Component {
 
   getVideoId() {
     console.log(this);
+    let videoIdList;
+    let url = this.state.html[num];
+    if (url !== undefined) {
+      let strUrl1 = url.split("/");
+      let idList = strUrl1[4].split("?");
+      videoIdList = idList[0];
+      console.log(videoIdList);
+    }
+    this.setState({
+      videoId: videoIdList
+    });
+  }
+
+  addToPlaylist() {
+    this.getVideoId();
+    console.log(this.state.videoId);
+    setTimeout(() => {
+      axios({
+        method: "post",
+        url: "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet",
+        headers: {
+          Authorization: "Bearer " + this.state.token,
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        data: {
+          snippet: {
+            playlistId: "PLSgh--PbHITrrakKhgiau4KnIChRVmqOk",
+            position: 0,
+            resourceId: {
+              kind: "youtube#video",
+              videoId: this.state.videoId
+            }
+          }
+        }
+      }).then(response => {
+        console.log(response);
+      });
+    }, 3000);
   }
 
   componentDidMount() {
@@ -166,9 +218,9 @@ class App extends Component {
     window.location.reload();
   }
 
-  addId() {
-    document.getElementsByTagName("iframe")[0].setAttribute("id", "yt");
-  }
+  // addId() {
+  //   document.getElementsByTagName("iframe")[0].setAttribute("id", "yt");
+  // }
 
   render() {
     const style = {
@@ -213,7 +265,7 @@ class App extends Component {
                 <button
                   type="button"
                   // eslint-disable-next-line no-restricted-globals
-                  onClick={this.getVideoId}
+                  onClick={this.addToPlaylist}
                   className="btn btn--loginApp-link"
                 >
                   {" "}
