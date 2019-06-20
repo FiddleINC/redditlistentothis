@@ -42,17 +42,18 @@ class App extends Component {
 			YouTubeRedirect: '',
 			userId: null,
 			videoId: null,
-			playlistsId: []
+			playlistId: null
 		};
 
 		this.getSubmission = this.getSubmission.bind(this);
 		this.getCredentials = this.getCredentials.bind(this);
 		this.validateToken = this.validateToken.bind(this);
 		this.getYouTubeData = this.getYouTubeData.bind(this);
-		this.getYouTubePlaylists = this.getYouTubePlaylists.bind(this);
+		// this.getYouTubePlaylists = this.getYouTubePlaylists.bind(this);
 		// this.addId = this.addId.bind(this);
 		this.getVideoId = this.getVideoId.bind(this);
 		this.addToPlaylist = this.addToPlaylist.bind(this);
+		this.createPlaylist = this.createPlaylist.bind(this);
 	}
 
 	getCredentials() {
@@ -82,29 +83,29 @@ class App extends Component {
 		});
 	}
 
-	getYouTubePlaylists() {
-		const config = {
-			headers: {
-				Authorization: 'Bearer ' + this.state.token,
-				Accept: 'application/json'
-			}
-		};
+	// getYouTubePlaylists() {
+	// 	const config = {
+	// 		headers: {
+	// 			Authorization: 'Bearer ' + this.state.token,
+	// 			Accept: 'application/json'
+	// 		}
+	// 	};
 
-		const url =
-			'https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=25&mine=true';
+	// 	const url =
+	// 		'https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=25&mine=true';
 
-		axios.get(url, config).then((response) => {
-			let playlistIds = [];
-			console.log(response.data.items);
-			response.data.items.forEach((item) => {
-				playlistIds.push(item.id);
-			});
-			console.log(playlistIds);
-			this.setState({
-				playlistsId: playlistIds
-			});
-		});
-	}
+	// 	axios.get(url, config).then((response) => {
+	// 		let playlistIds = [];
+	// 		console.log(response.data.items);
+	// 		response.data.items.forEach((item) => {
+	// 			playlistIds.push(item.id);
+	// 		});
+	// 		console.log(playlistIds);
+	// 		this.setState({
+	// 			playlistsId: playlistIds
+	// 		});
+	// 	});
+	// }
 
 	validateToken() {
 		if (this.state.token) {
@@ -135,7 +136,7 @@ class App extends Component {
 				height: height,
 				class: ''
 			});
-		}, 5000);
+		}, 6000);
 	}
 
 	getVideoId() {
@@ -153,9 +154,37 @@ class App extends Component {
 		});
 	}
 
+	createPlaylist() {
+		axios({
+			method: 'post',
+			url: 'https://www.googleapis.com/youtube/v3/playlists?part=snippet%2Cstatus',
+			headers: {
+				Authorization: 'Bearer ' + this.state.token,
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			data: {
+				snippet: {
+					title: 'Listen to This Reddit',
+					description: 'A Playlist created by Listen to this Reddit App developed by Fiddleinc',
+					tags: [ 'reddit', 'music' ],
+					defaultLanguage: 'en'
+				},
+				status: {
+					privacyStatus: 'private'
+				}
+			}
+		}).then((response) => {
+      console.log(response.data.id);
+      this.setState({
+        playlistId: response.data.id
+      })
+		});
+	}
+
 	addToPlaylist() {
 		this.getVideoId();
-		this.getYouTubePlaylists();
+		// this.getYouTubePlaylists();
 		console.log(this.state.videoId);
 		setTimeout(() => {
 			axios({
@@ -168,7 +197,7 @@ class App extends Component {
 				},
 				data: {
 					snippet: {
-						playlistId: 'PLSgh--PbHITrrakKhgiau4KnIChRVmqOk',
+						playlistId: this.state.playlistId,
 						position: 0,
 						resourceId: {
 							kind: 'youtube#video',
@@ -179,15 +208,16 @@ class App extends Component {
 			}).then((response) => {
 				console.log(response);
 			});
-		}, 4000);
+		}, 5000);
 	}
 
 	componentDidMount() {
 		// r.getHot()
 		//   .map(post => post.title)
 		//   .then(console.log)
-	
-		this.getYouTubeData();
+
+    this.getYouTubeData();
+    this.createPlaylist();
 	}
 
 	componentWillMount() {
@@ -198,8 +228,8 @@ class App extends Component {
 			this.setState({
 				token: _token
 			});
-    }
-    this.getSubmission();
+		}
+		this.getSubmission();
 		this.getCredentials();
 		this.validateToken();
 	}
