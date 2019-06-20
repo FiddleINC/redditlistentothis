@@ -50,6 +50,7 @@ class App extends Component {
     this.getCredentials = this.getCredentials.bind(this);
     this.validateToken = this.validateToken.bind(this);
     this.getYouTubeData = this.getYouTubeData.bind(this);
+    this.getYouTubePlaylists = this.getYouTubePlaylists.bind(this);
   }
 
   getCredentials() {
@@ -70,7 +71,7 @@ class App extends Component {
   }
 
   getYouTubeData() {
-    let config = {
+    const config = {
       headers: {
         Authorization: "Bearer " + this.state.token,
         Accept: "application/json"
@@ -90,6 +91,22 @@ class App extends Component {
           });
         });
       });
+  }
+
+  getYouTubePlaylists() {
+    const config = {
+      headers: {
+        Authorization: "Bearer " + this.state.token,
+        Accept: "application/json"
+      }
+    };
+
+    const url =
+      "https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=25&mine=true";
+
+    axios.get(url, config).then(response => {
+      console.log(response);
+    });
   }
 
   validateToken() {
@@ -184,6 +201,14 @@ class App extends Component {
                 >
                   {" "}
                   <span>Refresh</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={this.getYouTubePlaylists}
+                  className="btn btn--loginApp-link"
+                >
+                  {" "}
+                  <span>Get Playlists</span>
                 </button>
               </div>
             </div>
