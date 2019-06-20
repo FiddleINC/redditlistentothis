@@ -42,15 +42,17 @@ class App extends Component {
       class: "hidden",
       YouTubeClientID: "",
       YouTubeClientSecret: "",
-      YouTubeRedirect: ""
+      YouTubeRedirect: "",
+      userId: null
     };
 
     this.getSubmission = this.getSubmission.bind(this);
-    this.getYouTubeData = this.getYouTubeData.bind(this);
+    this.getCredentials = this.getCredentials.bind(this);
     this.validateToken = this.validateToken.bind(this);
+    this.getYouTubeData = this.getYouTubeData.bind(this);
   }
 
-  getYouTubeData() {
+  getCredentials() {
     axios.get("../client_secret.json").then(response => {
       console.log(response.data.web);
       this.setState({
@@ -67,12 +69,35 @@ class App extends Component {
     });
   }
 
+  getYouTubeData() {
+    let config = {
+      headers: {
+        Authorization: "Bearer " + this.state.token,
+        Accept: "application/json"
+      }
+    };
+
+    axios
+      .get(
+        "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true",
+        config
+      )
+      .then(response => {
+        response.data.items.map(item => {
+          console.log(item.id);
+          this.setState({
+            userId: item.id
+          });
+        });
+      });
+  }
+
   validateToken() {
     if (this.state.token) {
       axios({
         method: "post",
         url: oauth2Endpoint + "?access_token=" + this.state.token
-      }).then(response => console.log(response));
+      }).then(response => console.log(response.data));
     }
   }
 
@@ -108,6 +133,11 @@ class App extends Component {
     //   .map(post => post.title)
     //   .then(console.log)
     this.getSubmission();
+    this.getYouTubeData();
+  }
+
+  componentWillMount() {
+    console.log(hash);
     let _token = hash.access_token;
 
     if (_token) {
@@ -116,10 +146,7 @@ class App extends Component {
         token: _token
       });
     }
-  }
-
-  componentWillMount() {
-    this.getYouTubeData();
+    this.getCredentials();
     this.validateToken();
   }
 
@@ -127,6 +154,7 @@ class App extends Component {
     window.location.reload();
   }
   render() {
+    console.log(this.state);
     const style = {
       background: "#F5F5F5",
       padding: "20px"
