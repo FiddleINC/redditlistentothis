@@ -2,7 +2,7 @@
 
 This a React App that randomly shows Music from the [Listen to This Subreddit](https://www.reddit.com/r/listentothis/).
 
-###Current Working Branch: v1.1
+### Current Working Branch: v1.1
 
 - [x] Added a Iframe from the Content
 - [x] Add Refresh Button ( But Now you have to relogin into YouTube everytime for new videos)
