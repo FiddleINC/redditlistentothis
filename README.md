@@ -7,8 +7,8 @@ This a React App that randomly shows Music from the [Listen to This Subreddit](h
 - [x] Added a Iframe from the Content
 - [x] Add Refresh Button ( But Now you have to relogin into YouTube everytime for new videos)
 - [x] Add "Add to Playlist" Button
-- [ ] Add Autoplay feature
-- [ ] Stay Loggedin ( Using Backend or Redux)
+- [x] Add Autoplay feature
+- [x] Stay Loggedin ( Using Backend or Redux)
 - [ ] Clean the Code
 
 ## Available Scripts
