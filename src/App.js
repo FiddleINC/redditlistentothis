@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { Component } from "react";
 import axios from "axios";
 import "./App.css";
@@ -6,7 +7,10 @@ import {
   RedditclientId,
   RedditclientSecret,
   Redditusername,
-  Redditpassword
+  Redditpassword,
+  client_id,
+  client_secret,
+  redirect_uris
 } from "./config";
 // import { InboxStream, CommentStream, SubmissionStream } from "snoostorm";
 
@@ -59,7 +63,9 @@ class App extends Component {
           title: ""
         }
       ],
-      validationError: null
+      validationError: null,
+      index: num,
+      loggedIn: false
     };
 
     this.getSubmission = this.getSubmission.bind(this);
@@ -70,15 +76,17 @@ class App extends Component {
     // this.addId = this.addId.bind(this);
     this.getVideoId = this.getVideoId.bind(this);
     this.addToPlaylist = this.addToPlaylist.bind(this);
+    this.refreshPage = this.refreshPage.bind(this);
+    this.show_login_status = this.show_login_status.bind(this);
+    this.onStateChange = this.onStateChange.bind(this);
+    this.getDocumentIframe = this.getDocumentIframe.bind(this);
   }
 
   getCredentials() {
-    axios.get("client_secret.json").then(response => {
-      this.setState({
-        YouTubeClientID: response.data.web.client_id,
-        YouTubeClientSecret: response.data.web.client_secret,
-        YouTubeRedirect: response.data.web.redirect_uris[0]
-      });
+    this.setState({
+      YouTubeClientID: client_id,
+      YouTubeClientSecret: client_secret,
+      YouTubeRedirect: redirect_uris[0]
     });
   }
 
@@ -117,13 +125,15 @@ class App extends Component {
 
     axios.get(url, config).then(response => {
       let playlists = [];
-      console.log(response.data.items);
       response.data.items.forEach(item => {
         playlists.push({ id: item.id, title: item.snippet.title });
       });
-      console.log(playlists);
       this.setState({
-        playlists: playlists
+        playlists: playlists,
+        selectedPlaylist: {
+          id: playlists[0].id,
+          title: playlists[0].title
+        }
       });
     });
   }
@@ -145,8 +155,6 @@ class App extends Component {
       .getTop({ time: "month", limit: 100 })
       .then(response => {
         response.map(sub => {
-          // console.log(sub.media_embed.content);
-          console.log(sub);
           href.push(sub.media_embed.content);
           width.push(sub.media_embed.width);
           height.push(sub.media_embed.height);
@@ -159,18 +167,17 @@ class App extends Component {
         height: height,
         class: ""
       });
+      // this.getDocumentIframe();
     }, 6000);
   }
 
   getVideoId() {
-    console.log(this);
     let videoIdList;
-    let url = this.state.html[num];
+    let url = this.state.html[this.state.index];
     if (url !== undefined) {
       let strUrl1 = url.split("/");
       let idList = strUrl1[4].split("?");
       videoIdList = idList[0];
-      console.log(videoIdList);
     }
     this.setState({
       videoId: videoIdList
@@ -179,7 +186,6 @@ class App extends Component {
 
   addToPlaylist() {
     this.getVideoId();
-    console.log(this.state.videoId);
     setTimeout(() => {
       axios({
         method: "post",
@@ -199,17 +205,40 @@ class App extends Component {
             }
           }
         }
-      }).then(response => {
-        console.log(response);
-      });
-    }, 5000);
+      })
+        .then(response => {
+          alert("Done!");
+        })
+        .catch(error => {
+          alert("Request Failed! Try with Different Playlist");
+        });
+    }, 4000);
+  }
+
+  getDocumentIframe() {
+    let doc = document.getElementsByTagName("iframe")[0];
+    doc.setAttribute("id", "player");
+    console.log(doc);
+    this.onYouTubeIframeAPIReady();
+  }
+
+  onYouTubeIframeAPIReady() {
+    let player = new YT.Player("player", {
+      playerVars: { autoplay: 1 },
+      events: {
+        onStateChange: this.onStateChange
+      }
+    });
+  }
+
+  onStateChange(event) {
+    console.log(event);
+    if (event.data === 0) {
+      this.refreshPage();
+    }
   }
 
   componentDidMount() {
-    // r.getHot()
-    //   .map(post => post.title)
-    //   .then(console.log)
-
     this.getYouTubeData();
     this.getYouTubePlaylists();
   }
@@ -229,7 +258,16 @@ class App extends Component {
   }
 
   refreshPage() {
-    window.location.reload();
+    // window.location.reload();
+    this.setState({
+      index: Math.floor(Math.random() * 100)
+    });
+  }
+
+  show_login_status(status) {
+    this.setState({
+      loggedIn: status
+    });
   }
 
   // addId() {
@@ -237,29 +275,22 @@ class App extends Component {
   // }
 
   render() {
-    console.log(hash);
     const style = {
       background: "#F5F5F5",
       padding: "20px"
     };
     return (
       <div className="App">
+        <img
+          className="hidden"
+          alt="google"
+          onLoad={() => this.show_login_status(true)}
+          onError={() => this.show_login_status(false)}
+          src="https://accounts.google.com/CheckCookie?continue=https%3A%2F%2Fwww.google.com%2Fintl%2Fen%2Fimages%2Flogos%2Faccounts_logo.png&followup=https%3A%2F%2Fwww.google.com%2Fintl%2Fen%2Fimages%2Flogos%2Faccounts_logo.png&chtml=LoginDoneHtml&checkedDomains=youtube&checkConnection=youtube%3A291%3A1"
+        />
         <div className="App-header">
           {this.state.token ? (
             <div>
-              <div className={this.state.class} style={style}>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: this.state.html[num]
-                  }}
-                  onMouseEnter={this.addId}
-                  style={{
-                    width: this.state.width[num],
-                    height: this.state.height[num],
-                    border: "7.5px solid #292C35"
-                  }}
-                />
-              </div>
               <div className={this.state.class}>
                 <button
                   type="button"
@@ -269,6 +300,21 @@ class App extends Component {
                   {" "}
                   <span>Refresh</span>
                 </button>
+                <div style={style}>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: this.state.html[this.state.index]
+                    }}
+                    onMouseEnter={this.getDocumentIframe}
+                    style={{
+                      width: this.state.width[this.state.index],
+                      height: this.state.height[this.state.index],
+                      border: "7.5px solid #292C35"
+                    }}
+                  />
+                </div>
+              </div>
+              <div className={this.state.class}>
                 <div className="dropdown">
                   <div className="dropdown-content">
                     <select
@@ -305,6 +351,7 @@ class App extends Component {
             </div>
           ) : (
             <div>
+              <h1>Listen to This Reddit</h1>
               <a
                 className="btn btn--loginApp-link"
                 href={`${oauth2Endpoint}?client_id=${
