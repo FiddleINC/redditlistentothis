@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/FiddleINC/redditlistentothis/static/css/main.09f7dd75.chunk.css",
-    "main.js": "/FiddleINC/redditlistentothis/static/js/main.c605915d.chunk.js",
-    "main.js.map": "/FiddleINC/redditlistentothis/static/js/main.c605915d.chunk.js.map",
-    "runtime~main.js": "/FiddleINC/redditlistentothis/static/js/runtime~main.776f9374.js",
-    "runtime~main.js.map": "/FiddleINC/redditlistentothis/static/js/runtime~main.776f9374.js.map",
-    "static/js/2.7b5ef24a.chunk.js": "/FiddleINC/redditlistentothis/static/js/2.7b5ef24a.chunk.js",
-    "static/js/2.7b5ef24a.chunk.js.map": "/FiddleINC/redditlistentothis/static/js/2.7b5ef24a.chunk.js.map",
-    "index.html": "/FiddleINC/redditlistentothis/index.html",
-    "precache-manifest.26ccb7cb5dbcae8be0616710ef84f65d.js": "/FiddleINC/redditlistentothis/precache-manifest.26ccb7cb5dbcae8be0616710ef84f65d.js",
-    "service-worker.js": "/FiddleINC/redditlistentothis/service-worker.js",
-    "static/css/main.09f7dd75.chunk.css.map": "/FiddleINC/redditlistentothis/static/css/main.09f7dd75.chunk.css.map"
+    "main.css": "/redditlistentothis/static/css/main.09f7dd75.chunk.css",
+    "main.js": "/redditlistentothis/static/js/main.555ebb66.chunk.js",
+    "main.js.map": "/redditlistentothis/static/js/main.555ebb66.chunk.js.map",
+    "runtime~main.js": "/redditlistentothis/static/js/runtime~main.48ee2a74.js",
+    "runtime~main.js.map": "/redditlistentothis/static/js/runtime~main.48ee2a74.js.map",
+    "static/js/2.31a3e1a7.chunk.js": "/redditlistentothis/static/js/2.31a3e1a7.chunk.js",
+    "static/js/2.31a3e1a7.chunk.js.map": "/redditlistentothis/static/js/2.31a3e1a7.chunk.js.map",
+    "index.html": "/redditlistentothis/index.html",
+    "precache-manifest.c024601e84c0af64953d1fd0995eec97.js": "/redditlistentothis/precache-manifest.c024601e84c0af64953d1fd0995eec97.js",
+    "service-worker.js": "/redditlistentothis/service-worker.js",
+    "static/css/main.09f7dd75.chunk.css.map": "/redditlistentothis/static/css/main.09f7dd75.chunk.css.map"
   }
 }
